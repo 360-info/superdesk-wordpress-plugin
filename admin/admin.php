@@ -64,6 +64,7 @@ function superdesk_admin() {
         'slugline-ignored' => $_POST['slugline-ignored'],
         'priority_threshhold' => $_POST['priority_threshhold'],
         'download-images' => $_POST['download-images'],
+        # NOTE - is this correct? i feel like it's pulling the wrong option
         'post-formats' => $_POST['download-images'],
         'post-formats-table' => $resultArray,
         'location-modifier' => $_POST['location-modifier'],
