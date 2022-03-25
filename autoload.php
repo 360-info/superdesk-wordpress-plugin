@@ -43,7 +43,7 @@ if ($obj['type'] == 'text') {
       if($prepend){
         $content .= $updateText .'<br>';
       }
-      $content .= wp_strip_all_tags($obj['located']) . $settings['separator-located'];
+      //$content .= wp_strip_all_tags($obj['located']) . $settings['separator-located'];
       $content .= mb_substr($obj['body_html'], mb_strpos($obj['body_html'], '>') + 1, mb_strlen($obj['body_html']));
     } else {
       $content = $obj['description_html'] . "<!--more-->";
@@ -282,3 +282,57 @@ if ($obj['type'] == 'text') {
     }
   }
 }
+
+/************************/
+/* CHRISTOM CUSTOM CODE */
+/************************/  
+//$tgaID =  $wpdb->get_row("SELECT post_id FROM " . $wpdb->prefix . DB_TABLE_SYNC_POST . " WHERE guid = '" . $guid . "'");
+$tgaHighlight = $obj['slugline'];
+$tgaHoverInfo = $obj['description_html'];
+
+update_post_meta( $sync->post_id, 'highlight_label', $tgaHighlight );
+update_post_meta( $sync->post_id, 'hover_info', $tgaHoverInfo );
+
+/***DOI***/
+
+$tgaExtra = $obj['extra'];
+$tgaDOI = $tgaExtra['doi'];
+update_post_meta( $sync->post_id, 'doi', $tgaDOI );
+
+/***authors/editors***/
+
+$authors = $obj['authors'];
+
+$authorsGRP = group_by('role', $authors);
+
+ob_start();
+foreach($authorsGRP['author'] as $author) {
+  echo '<strong>'.$author['name'].'</strong><br>';
+
+  $authorName = $author['name'];
+  $authorID =  $wpdb->get_row("SELECT ID FROM wp_posts WHERE post_title = '" . $authorName . "'");
+  $institutions = get_field( 'institution', $authorID->ID);
+  foreach ($institutions as $institution) {
+    echo $institution->post_title.'<br><br>';
+  }
+};
+$author_out =  ob_get_contents();
+ob_end_clean();
+
+update_post_meta( $sync->post_id, 'authors', $author_out );
+
+ob_start();
+foreach($authorsGRP['editor'] as $editor) {
+  echo '<strong>'.$editor['name'].'</strong><br>';
+
+  $editorName = $editor['name'];
+  $editorID =  $wpdb->get_row("SELECT ID FROM wp_posts WHERE post_title = '" . $editorName . "'");
+  $institutions = get_field( 'institution', $editorID->ID);
+  foreach ($institutions as $institution) {
+    echo $institution->post_title.'<br><br>';
+  }
+};
+$editor_out =  ob_get_contents();
+ob_end_clean();
+
+update_post_meta( $sync->post_id, 'editors', $editor_out );
