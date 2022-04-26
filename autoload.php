@@ -286,18 +286,22 @@ if ($obj['type'] == 'text') {
 /************************/
 /* CHRISTOM CUSTOM CODE */
 /************************/  
+
+// get the post ID from either the updated post or the newly created one
+$target_post_id = $sync ? $sync->post_id : $post_ID;
+
 //$tgaID =  $wpdb->get_row("SELECT post_id FROM " . $wpdb->prefix . DB_TABLE_SYNC_POST . " WHERE guid = '" . $guid . "'");
 $tgaHighlight = $obj['slugline'];
 $tgaHoverInfo = $obj['description_html'];
 
-update_post_meta( $sync->post_id, 'highlight_label', $tgaHighlight );
-update_post_meta( $sync->post_id, 'hover_info', $tgaHoverInfo );
+update_post_meta( $target_post_id, 'highlight_label', $tgaHighlight );
+update_post_meta( $target_post_id, 'hover_info', $tgaHoverInfo );
 
 /***DOI***/
 
 $tgaExtra = $obj['extra'];
 $tgaDOI = $tgaExtra['doi'];
-update_post_meta( $sync->post_id, 'doi', $tgaDOI );
+update_post_meta( $target_post_id, 'doi', $tgaDOI );
 
 /***authors/editors***/
 
@@ -319,7 +323,7 @@ foreach($authorsGRP['author'] as $author) {
 $author_out =  ob_get_contents();
 ob_end_clean();
 
-update_post_meta( $sync->post_id, 'authors', $author_out );
+update_post_meta( $target_post_id, 'authors', $author_out );
 
 ob_start();
 foreach($authorsGRP['editor'] as $editor) {
@@ -335,4 +339,4 @@ foreach($authorsGRP['editor'] as $editor) {
 $editor_out =  ob_get_contents();
 ob_end_clean();
 
-update_post_meta( $sync->post_id, 'editors', $editor_out );
+update_post_meta( $target_post_id, 'editors', $editor_out );
